@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\generalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Not Logged
+Route::get('/', [generalController::class, 'index'])->name('home');
+Route::get('/cursos', [generalController::class,'getCursos'])->name('cursosPublic');
+Route::get('/professores', [generalController::class,'getProfessores'])->name('professoresPublic');
+Route::get('/login', [generalController::class,'login'])->name('login');
+
+// Administrador
+Route::get('/admin/');
+
+// Professor
+Route::get('/professor');
+
+// Aluno
+Route::get('aluno');
