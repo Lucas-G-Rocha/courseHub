@@ -12,10 +12,4 @@ class generalController extends Controller
 
       return view('welcome');
    }
-
-   public function getProfessores()
-   {
-
-      return view('public.professores');
-   }
 }

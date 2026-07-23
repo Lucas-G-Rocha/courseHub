@@ -3,6 +3,7 @@
 use App\Http\Controllers\authController;
 use App\Http\Controllers\cursosController;
 use App\Http\Controllers\generalController;
+use App\Http\Controllers\professorsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,20 +17,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Not Logged
-Route::get('/', [generalController::class, 'index'])->name('home');
-Route::get('/professores', [generalController::class,'getProfessores'])->name('professoresPublic');
-Route::get('/login', [authController::class,'loginPage'])->name('login');
 
-//cursos
-Route::get('/cursos', [cursosController::class,'getPublicCursos'])->name('cursosPublic');
+Route::get('/', [generalController::class, 'index'])->name('home');
+Route::get('/login', [authController::class, 'loginPage'])->name('login');
+
+//Cursos
+Route::get('/cursos', [cursosController::class, 'getPublicCursos'])->name('cursosPublic');
 Route::get('/cursos/{id}', [cursosController::class, 'getPublicCurso'])->name('cursoPublic');
 
 // Administrador
 Route::get('/admin/');
 
-// Professor
-Route::get('/professor');
+// Professores
+Route::get('/professores', [professorsController::class, 'getPublicProfessors'])->name('professoresPublic');
+Route::get('/professores/{id}', [professorsController::class, 'getPublicProfessor'])->name('professorPublic');
 
 // Aluno
 Route::get('aluno');
