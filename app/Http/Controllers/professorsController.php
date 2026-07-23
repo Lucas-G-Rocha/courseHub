@@ -19,9 +19,14 @@ class professorsController extends Controller
         $professor = Professor::findOrFail($id);
 
         if (!$professor) {
-            return back()->withErrors(['404', 'professor não encontrado']);
+            return back()->with('fail', 'professor não encontrado');
         }
         return view('public.professor', compact('professor'));
 
+    }
+
+    public function professorInicio(){
+
+    return view('professor.inicio');
     }
 }

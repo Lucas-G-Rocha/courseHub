@@ -17,9 +17,9 @@
     <title>@yield('title')</title>
 </head>
 
-<body>
+<body class="position-relative">
 
-    <nav class="navbar navbar-expand-lg bg-secondary-subtle">
+    <nav class="navbar position-fixed fixed-top navbar-expand-lg bg-secondary-subtle">
         <div class="container">
             <a class="navbar-brand text-primary-emphasis" href="/">CourseHub</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -28,22 +28,39 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav w-100 justify-content-center column-gap-3">
-                    <a class="nav-link active" aria-current="page" href="/">Início</a>
-                    <a class="nav-link" href="/cursos">Cursos</a>
-                    <a class="nav-link" href="/professores">Professores</a>
+
                     @auth
+                        <a class="nav-link active" aria-current="page" href="{{route('adminInicio')}}">Início</a>
+                        <a class="nav-link" href="{{ route('adminCursos') }}">Cursos</a>
+                        <a class="nav-link" href="{{ route('adminProfessores') }}">Professores</a>
+                        <a class="nav-link" href="{{ route('adminStudents') }}">Alunos</a>
 
-                        <a class="nav-link" href="#logout">Logout</a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-primary px-3">Logout</button>
+                        </form>
                     @else
-
-                        <a class="nav-link btn btn-primary px-3" href="/login" role="button">Login</a>
+                        <a class="nav-link active" aria-current="page" href="/">Início</a>
+                        <a class="nav-link" href="/cursos">Cursos</a>
+                        <a class="nav-link" href="/professores">Professores</a>
+                        <a class="nav-link btn btn-primary px-3" href="{{ route('loginPage') }}" role="button">Login</a>
                     @endauth
                 </div>
             </div>
         </div>
     </nav>
+    @if(session('success'))
+        <div class="alert alert-success position-absolute top-0 end-0 w-25">
+            <p class="fs-5">{{ session('success') }}</p>
+        </div>
 
-    <main>
+    @elseif(session('fail'))
+        <div class="alert alert-danger position-absolute top-0 end-0 w-25">
+            <p class="fs-5">{{ session('fail') }}</p>
+        </div>
+    @endif
+
+    <main style="margin-top: 100px">
         @yield('content')
     </main>
 

@@ -18,7 +18,7 @@ class cursosController extends Controller
     $curso = Course::findOrFail($id);
 
     if(!$curso){
-        return back()->withErrors(['404', 'Curso não encontrado']);
+        return back()->with('fail', 'Curso não encontrado');
     }
     return view('public.curso', compact('curso'));
 

@@ -5,7 +5,7 @@
 
 @section('content')
 
-    <div class="container-fluid d-flex flex-column row-gap-5 align-items-center mt-5">
+    <div class="container-fluid d-flex flex-column row-gap-5 align-items-center">
         <h1>Nossos Professores</h1>
         <div class="container">
             <div class="row g-4">
