@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\authController;
+use App\Http\Controllers\cursosController;
 use App\Http\Controllers\generalController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,9 +18,12 @@ use Illuminate\Support\Facades\Route;
 
 // Not Logged
 Route::get('/', [generalController::class, 'index'])->name('home');
-Route::get('/cursos', [generalController::class,'getCursos'])->name('cursosPublic');
 Route::get('/professores', [generalController::class,'getProfessores'])->name('professoresPublic');
-Route::get('/login', [generalController::class,'login'])->name('login');
+Route::get('/login', [authController::class,'loginPage'])->name('login');
+
+//cursos
+Route::get('/cursos', [cursosController::class,'getPublicCursos'])->name('cursosPublic');
+Route::get('/cursos/{id}', [cursosController::class, 'getPublicCurso'])->name('cursoPublic');
 
 // Administrador
 Route::get('/admin/');

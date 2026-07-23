@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class generalController extends Controller
 {
-   public function index(){
+   public function index()
+   {
 
-    return view('welcome');
+      return view('welcome');
    }
 
-   public function getCursos(){
+   public function getProfessores()
+   {
 
-   return view('public.cursos');
-   }
-
-   public function getProfessores(){
-
-   return view('public.professores');
+      return view('public.professores');
    }
 }
