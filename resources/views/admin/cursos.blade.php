@@ -1,6 +1,6 @@
 @extends('layout.main')
 
-@section('title', 'Professores')
+@section('title', 'Cursos')
 
 @section('content')
 
@@ -9,16 +9,16 @@
     {{-- Cabeçalho --}}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 
-        <h1 class="mb-0">Professores</h1>
+        <h1 class="mb-0">Cursos</h1>
 
         <div class="d-flex gap-2">
             {{-- Search --}}
-            <form action="{{ route('adminProfessores') }}" method="GET" class="d-flex">
+            <form action="{{ route('adminCursos') }}" method="GET" class="d-flex">
                 <input
                     type="search"
                     name="search"
                     class="form-control"
-                    placeholder="Buscar professor..."
+                    placeholder="Buscar curso..."
                     value="{{ request('search') }}"
                 >
 
@@ -28,26 +28,26 @@
             </form>
 
             {{-- Cadastrar --}}
-            <a href="{{ route('adminProfessorCreatePage') }}" class="btn btn-primary">
-                Cadastrar Professor
+            <a href="{{ route('adminCursoCreatePage') }}" class="btn btn-primary">
+                Cadastrar Curso
             </a>
         </div>
 
     </div>
 
 
-    {{-- Lista de professores --}}
-    @if ($professores->isEmpty())
+    {{-- Lista de cursos --}}
+    @if ($cursos->isEmpty())
 
         <div class="alert alert-info">
-            Nenhum professor encontrado.
+            Nenhum curso encontrado.
         </div>
 
     @else
 
         <div class="row g-4">
 
-            @foreach ($professores as $professor)
+            @foreach ($cursos as $curso)
 
                 <div class="col-12 col-md-6 col-lg-4">
 
@@ -57,42 +57,44 @@
 
                             {{-- Informações --}}
                             <h5 class="card-title">
-                                {{ $professor->name }}
+                                {{ $curso->name }}
                             </h5>
 
                             <p class="card-text mb-1">
-                                <strong>Email:</strong>
-                                {{ $professor->email }}
+                                <strong>Professor:</strong>
+                                {{ $curso->professor->name }}
                             </p>
 
-                            {{-- Exemplo de relacionamento --}}
-                            {{-- 
                             <p class="card-text mb-1">
-                                <strong>Cursos:</strong>
-                                {{ $professor->courses->count() }}
+                                <strong>Aulas:</strong>
+                                {{ $curso->lessons->count() }}
                             </p>
-                            --}}
+
+                            <p class="card-text mb-1">
+                                <strong>Matriculados:</strong>
+                                {{ $curso->enrollments->count() }}
+                            </p>
 
                             {{-- Link para página individual --}}
                             <a
-                                href="{{ route('adminProfessor', $professor->id) }}"
+                                href="{{ route('adminCurso', $curso->id) }}"
                                 class="btn btn-outline-primary mt-3"
                             >
-                                Ver perfil
+                                Ver curso
                             </a>
 
                             {{-- Botões --}}
                             <div class="d-flex gap-2 mt-2">
 
                                 <a
-                                    href="{{ route('adminProfessorEditPage', $professor->id) }}"
+                                    href="{{ route('adminCursoEditPage', $curso->id) }}"
                                     class="btn btn-outline-warning flex-grow-1"
                                 >
                                     Editar
                                 </a>
 
                                 <form
-                                    action="{{ route('adminProfessorDestroy', $professor->id) }}"
+                                    action="{{ route('adminCursoDestroy', $curso->id) }}"
                                     method="POST"
                                     class="flex-grow-1"
                                 >
@@ -102,7 +104,7 @@
                                     <button
                                         type="submit"
                                         class="btn btn-outline-danger w-100"
-                                        onclick="return confirm('Tem certeza que deseja deletar este professor?')"
+                                        onclick="return confirm('Tem certeza que deseja deletar este curso?')"
                                     >
                                         Deletar
                                     </button>
@@ -122,7 +124,7 @@
 
         {{-- Paginação --}}
         <div class="d-flex justify-content-center mt-5">
-            {{ $professores->links() }}
+            {{ $cursos->links() }}
         </div>
 
     @endif

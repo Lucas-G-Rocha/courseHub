@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class StudentSeeder extends Seeder
 {
@@ -17,6 +18,11 @@ class StudentSeeder extends Seeder
     {
     
         $user = User::where('email', 'maria@example.com')->firstOrFail();
+        $studentsUser = User::whereHas('role', function($query){
+            $query->where('name', 'student');
+        })->where('id', '!=', "$user->id")->get();
+        
+        $faker = Faker::create();
 
         Student::create([
             'name' => 'Maria Santos',
@@ -48,6 +54,17 @@ class StudentSeeder extends Seeder
             'email' => 'rafael.souza@example.com',
             'birth_date' => '2002-07-28',
         ]);
+
+        foreach($studentsUser as $user){
+            Student::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'birth_date' => $faker->date('Y-m-d', '-18 years'),
+                'user_id' => $user->id
+            ]);
+        }
+
+
     }
 }
 

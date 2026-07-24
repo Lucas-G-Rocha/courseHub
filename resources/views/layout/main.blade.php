@@ -17,7 +17,7 @@
     <title>@yield('title')</title>
 </head>
 
-<body class="position-relative">
+<body class="position-relative" style="padding-bottom: 40px">
 
     <nav class="navbar position-fixed fixed-top navbar-expand-lg bg-secondary-subtle">
         <div class="container">
@@ -60,7 +60,7 @@
         </div>
     @endif
 
-    <main style="margin-top: 100px">
+    <main style="margin-top: 100px;">
         @yield('content')
     </main>
 

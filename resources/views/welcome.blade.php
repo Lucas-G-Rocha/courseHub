@@ -24,7 +24,7 @@
             </a>
 
             @guest
-                <a href="{{ route('login') }}" class="btn btn-outline-secondary btn-lg ms-2">
+                <a href="{{ route('loginPage') }}" class="btn btn-outline-secondary btn-lg ms-2">
                     Entrar
                 </a>
             @endguest

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Professor;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class ProfessorSeeder extends Seeder
 {
@@ -15,8 +16,12 @@ class ProfessorSeeder extends Seeder
      */
     public function run()
     {
-        
+
         $user = User::where('email', 'joao@example.com')->firstOrFail();
+        $faker = Faker::create();
+        $professorUser = User::whereHas('role', function($query){
+            $query->where('name', 'professor');
+        })->where('email', '!=', 'joao@example.com')->get();
 
         Professor::create([
             'name' => 'João Silva',
@@ -48,5 +53,14 @@ class ProfessorSeeder extends Seeder
             'email' => 'rafael.almeida@example.com',
             'bio' => 'Professor especializado em bancos de dados, SQL e modelagem de sistemas.',
         ]);
+
+        foreach ($professorUser as $user) {
+            Professor::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => $faker->date('Y-m-d', '-18 years'),
+                'user_id' => $user->id
+            ]);
+        }
     }
 }

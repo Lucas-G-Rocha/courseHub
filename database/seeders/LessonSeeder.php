@@ -25,6 +25,19 @@ class LessonSeeder extends Seeder
             'PHP Orientado a Objetos'
         )->firstOrFail();
 
+        $courses = Course::whereNotIn('name', [$laravel->name, $php->name])->get();
+
+        foreach ($courses as $course) {
+            for ($i = 0; $i < 4; $i++) {
+                Lesson::create([
+                    'name' => "Lição " . ($i + 1) . " de $course->name",
+                    'description' => 'Conhecendo o curso e sua estrutura básica.',
+                    'content' => 'Nesta aula você aprenderá os fundamentos do curso, sua ensinamentos e os principais pontos que aborda.',
+                    'course_id' => $course->id,
+                ]);
+            }
+        }
+
         // Aulas do curso de Laravel
 
         Lesson::create([

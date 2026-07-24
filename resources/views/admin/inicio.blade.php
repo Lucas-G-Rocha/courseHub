@@ -62,7 +62,7 @@
                                 Ver professores
                             </a>
 
-                            <a href="{{ route('adminProfessorCreate') }}"
+                            <a href="{{ route('adminProfessorCreatePage') }}"
                                class="btn btn-success">
                                 Cadastrar professor
                             </a>
@@ -99,7 +99,7 @@
                                 Ver cursos
                             </a>
 
-                            <a href="{{ route('adminCursoCreate') }}"
+                            <a href="{{ route('adminCursoCreatePage') }}"
                                class="btn btn-success">
                                 Cadastrar curso
                             </a>
@@ -153,7 +153,7 @@
                                 Ver alunos
                             </a>
 
-                            <a href="{{ route('adminStudentCreate') }}"
+                            <a href="{{ route('adminStudentCreatePage') }}"
                                class="btn btn-success">
                                 Cadastrar aluno
                             </a>
