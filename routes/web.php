@@ -42,7 +42,8 @@ Route::get('/admin/professor/create', [adminController::class, 'adminProfessorCr
 Route::post('/api/admin/professor/create', [adminController::class, 'adminProfessorCreate'])->name('adminProfessorCreate');
 Route::get('admin/professor/{id}', [adminController::class, 'adminProfessor'])->name('adminProfessor');
 Route::get('/admin/professor/edit/{id}', [adminController::class, 'adminProfessorEditPage'])->name('adminProfessorEditPage');
-Route::get('/admin/professor/destroy/{id}', [adminController::class, 'adminProfessorDestroy'])->name('adminProfessorDestroy');
+Route::put('/admin/professor/edit/{id}', [adminController::class, 'adminProfessorEdit'])->name('adminProfessorEdit');
+Route::delete('/admin/professor/destroy/{id}', [adminController::class, 'adminProfessorDestroy'])->name('adminProfessorDestroy');
 
 Route::get('/admin/cursos', [adminController::class, 'adminCursos'])->name('adminCursos');
 Route::get('admin/curso/{id}', [adminController::class, 'adminCurso'])->name('adminCurso');

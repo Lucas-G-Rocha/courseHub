@@ -142,7 +142,7 @@
                 <div class="d-flex justify-content-end gap-2">
 
                     <a
-                        href="{{ route('adminProfessores') }}"
+                        href="{{url()->previous()}}"
                         class="btn btn-outline-secondary"
                     >
                         Cancelar

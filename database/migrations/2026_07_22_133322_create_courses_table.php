@@ -19,7 +19,7 @@ class CreateCoursesTable extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2)->default(0);
             $table->unsignedInteger('workload');
-            $table->foreignId('professor_id')->constrained();
+            $table->foreignId('professor_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

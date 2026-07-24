@@ -19,7 +19,7 @@
 
 <body class="position-relative" style="padding-bottom: 40px">
 
-    <nav class="navbar position-fixed fixed-top navbar-expand-lg bg-secondary-subtle">
+    <nav class="navbar position-fixed fixed-top navbar-expand-lg bg-secondary-subtle z-2">
         <div class="container">
             <a class="navbar-brand text-primary-emphasis" href="/">CourseHub</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -50,12 +50,12 @@
         </div>
     </nav>
     @if(session('success'))
-        <div class="alert alert-success position-absolute top-0 end-0 w-25">
+        <div class="alert alert-success position-fixed end-0 w-25 z-3" style="top: 80px;">
             <p class="fs-5">{{ session('success') }}</p>
         </div>
 
     @elseif(session('fail'))
-        <div class="alert alert-danger position-absolute top-0 end-0 w-25">
+        <div class="alert alert-danger position-fixed  end-0 w-25 z-3" style="">
             <p class="fs-5">{{ session('fail') }}</p>
         </div>
     @endif
