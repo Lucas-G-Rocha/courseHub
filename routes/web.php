@@ -46,20 +46,26 @@ Route::put('/admin/professor/edit/{id}', [adminController::class, 'adminProfesso
 Route::delete('/admin/professor/destroy/{id}', [adminController::class, 'adminProfessorDestroy'])->name('adminProfessorDestroy');
 
 Route::get('/admin/cursos', [adminController::class, 'adminCursos'])->name('adminCursos');
-Route::get('admin/curso/{id}', [adminController::class, 'adminCurso'])->name('adminCurso');
 Route::get('/admin/curso/create', [adminController::class, 'adminCursoCreatePage'])->name('adminCursoCreatePage');
+Route::post('/admin/curso/create', [adminController::class, 'adminCursoCreate'])->name('adminCursoCreate');
+
+Route::get('admin/curso/{id}', [adminController::class, 'adminCurso'])->name('adminCurso');
 Route::get('/admin/curso/edit/{id}', [adminController::class, 'adminCursoEditPage'])->name('adminCursoEditPage');
-Route::get('/admin/curso/destroy/{id}', [adminController::class, 'adminCursoDestroy'])->name('adminCursoDestroy');
+Route::put('/admin/curso/edit/{id}', [adminController::class, 'adminCursoEdit'])->name('adminCursoEdit');
+Route::delete('/admin/curso/destroy/{id}', [adminController::class, 'adminCursoDestroy'])->name('adminCursoDestroy');
+
+Route::post('/admin/lesson/create/{id}', [adminController::class, 'adminLessonCreate'])->name('adminLessonCreate');
+Route::delete('/admin/lesson/destroy/{id}', [adminController::class, 'adminLessonDestroy'])->name('adminLessonDestroy');
+Route::put('/admin/lesson/{id}', [adminController::class, 'adminLessonEdit'])->name('adminLessonEdit');
 
 
 Route::get('/admin/alunos', [adminController::class, 'adminStudents'])->name('adminStudents');
-Route::get('/admin/aluno/{id}', [adminController::class, 'adminStudent'])->name('adminStudent');
 Route::get('/admin/alunos/create', [adminController::class, 'adminStudentCreatePage'])->name('adminStudentCreatePage');
+Route::get('/admin/aluno/{id}', [adminController::class, 'adminStudent'])->name('adminStudent');
 Route::get('/admin/aluno/edit/{id}', [adminController::class, 'adminStudentEditPage'])->name('adminStudentoEditPage');
 Route::get('/admin/aluno/destroy/{id}', [adminController::class, 'adminStudentDestroy'])->name('adminStudentDestroy');
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 // Professores
 Route::get('/professores', [professorsController::class, 'getPublicProfessors'])->name('professoresPublic');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Lesson;
 use App\Models\Professor;
 use App\Models\Role;
 use App\Models\Student;
@@ -111,7 +112,12 @@ class adminController extends Controller
     {
         $professor = Professor::findOrFail($id);
 
-        return view('admin.professorEdit', compact('professor'));
+        if ($professor) {
+            return view('admin.professorEdit', compact('professor'));
+
+        } else {
+            return redirect()->route('adminProfessor', $id)->with('fail', 'Professor não encontrado');
+        }
     }
 
     public function adminProfessorEdit(Request $request, $id)
@@ -168,7 +174,7 @@ class adminController extends Controller
         if ($professor) {
 
             return redirect()->route('adminProfessores')->with('success', 'Professor e seus cursos deletados com sucesso!');
-        }else{
+        } else {
             return back()->with('fail', 'Erro ao deletar professor e seus cursos');
         }
     }
@@ -183,18 +189,174 @@ class adminController extends Controller
         return view('admin.cursos', compact('cursos'));
     }
 
-    public function adminCurso()
+    public function adminCurso($id)
     {
+        $curso = Course::find($id);
+        if ($curso) {
+            return view('admin.curso', compact('curso'));
+        } else {
+            return redirect()->route('adminCursos')->with('fail', 'Curso não encontrado!');
+        }
+    }
 
+    public function adminCursoCreatePage()
+    {
+        $professores = Professor::all();
+
+        return view('admin.cursoCreate', compact('professores'));
+    }
+
+    public function adminCursoCreate(Request $request)
+    {
+        $credentials = $request->validate([
+            'name' => ['required', 'string'],
+            'professor_id' => ['required', 'integer', 'min:1'],
+            'workload' => ['required', 'integer', 'min:0'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'description' => ['nullable', 'string']
+        ]);
+
+        $professorExists = Professor::where('id', $request->professor_id)->exists();
+        if (!$professorExists) {
+            return back()->with('fail', 'Professor inválido')->withInput();
+        }
+        try {
+
+            $createdCourse = Course::create([
+                'name' => $credentials['name'],
+                'professor_id' => $credentials['professor_id'],
+                'workload' => $credentials['workload'],
+                'price' => $credentials['price'],
+                'description' => $credentials['description'] ?? null,
+            ]);
+
+            return redirect()->route('adminCursos')->with('success', 'Curso criado com Sucesso');
+        } catch (\Exception $e) {
+            return back()->with('fail', 'Erro ao criar curso')->withInput();
+
+        }
     }
 
     public function adminCursoEditPage($id)
     {
+        $curso = Course::find($id);
+        $professores = Professor::all();
+        if ($curso) {
+            return view('admin.cursoEdit', compact(['curso', 'professores']));
+        } else {
+            return redirect()->route('adminCurso', $id)->with('fail', 'Curso não encontrado!');
 
+        }
+    }
+
+    public function adminCursoEdit(Request $request, $id)
+    {
+        $credentials = $request->validate([
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'price' => ['required'],
+            'workload' => ['required'],
+            'professor_id' => ['nullable']
+        ]);
+
+        $professorExists = Professor::where('id', $id)->exists();
+
+        if (!$professorExists) {
+            return back()->with('fail', 'ID do professor inválido')->withInput();
+        }
+
+        $updatedCourse = Course::where('id', $id)->update([
+            'name' => $credentials['name'],
+            'description' => $credentials['description'],
+            'price' => $credentials['price'],
+            'workload' => $credentials['workload'],
+            'professor_id' => $credentials['professor_id'],
+        ]);
+
+        if ($updatedCourse) {
+            return redirect()->route('adminCurso', $id)->with('success', 'Curso Editado com Sucesso');
+        } else {
+            return back()->with('fail', 'Erro ao editar curso')->withInput();
+
+        }
     }
 
     public function adminCursoDestroy($id)
     {
+        $delete = Course::destroy($id);
+        if ($delete) {
+            return redirect()->route('adminCursos')->with('success', 'Curso e associados deletados com sucesso');
+        } else {
+            return back()->with('fail', 'Erro ao deletar curso e associados');
+        }
+
+    }
+
+    public function adminLessonCreate(Request $request, $id)
+    {
+        $course = Course::find($id);
+
+        if (!$course) {
+            return back()->with('fail', 'Curso não encontrado');
+        }
+
+        $credentials = $request->validate([
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'content' => ['required', 'string']
+        ]);
+        try {
+            Lesson::create([
+                'name' => $credentials['name'],
+                'description' => $credentials['description'] ?? null,
+                'content' => $credentials['content'],
+                'course_id' => $course->id,
+            ]);
+
+            return back()->with('success', 'Lição criada com sucesso!');
+        } catch (\Exception $e) {
+
+            return back()->with('fail', 'Erro ao criar Lição')->withInput();
+        }
+
+    }
+
+    public function adminLessonDestroy($id)
+    {
+        $delete = Lesson::destroy($id);
+        if ($delete) {
+            return back()->with('success', 'Lição deletada com sucesso!');
+        } else {
+            return back()->with('fail', 'Erro ao deletar Lição');
+        }
+
+    }
+
+    public function adminLessonEdit(Request $request, $id)
+    {
+        $lesson = Lesson::where('id', $id)->exists();
+
+        if (!$lesson) {
+            return back()->with('fail', 'Lição não existe');
+        }
+
+        $credentials = $request->validate([
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'content' => ['required', 'string']
+        ]);
+
+        $updatedLesson = Lesson::where('id', $id)->update([
+            'name' => $credentials['name'],
+            'description' => $credentials['description'] ?? null,
+            'content' => $credentials['content']
+        ]);
+
+        if ($updatedLesson) {
+            return back()->with('success', 'Lição atualizada!');
+        } else {
+            return back()->with('fail', 'Falha ao atualizar lição');
+        }
 
     }
 
