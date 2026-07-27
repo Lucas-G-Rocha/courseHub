@@ -1,6 +1,6 @@
 @extends('layout.main')
 
-@section('title', 'Professores')
+@section('title', 'Meus Cursos')
 
 @section('content')
 
@@ -9,55 +9,30 @@
         {{-- Cabeçalho --}}
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 
-            <h1 class="mb-0">Professores</h1>
+            <h1 class="mb-0">Meus Cursos</h1>
 
-            <div class="d-flex gap-2">
-
-                {{-- Search --}}
-                <form action="{{ route('adminProfessores') }}" method="GET" class="d-flex">
-
-                    <input
-                        type="search"
-                        name="search"
-                        class="form-control"
-                        placeholder="Buscar professor..."
-                        value="{{ request('search') }}"
-                    >
-
-                    <button
-                        type="submit"
-                        class="btn btn-outline-primary ms-2"
-                    >
-                        Buscar
-                    </button>
-
-                </form>
-
-                {{-- Cadastrar --}}
-                <a
-                    href="{{ route('adminProfessorCreatePage') }}"
-                    class="btn btn-primary"
-                >
-                    Cadastrar Professor
-                </a>
-
-            </div>
+            <a
+                href="{{ route('professorMeuCursoCreatePage') }}"
+                class="btn btn-primary"
+            >
+                Cadastrar Curso
+            </a>
 
         </div>
 
 
-        {{-- Lista de professores --}}
-        @if ($professores->isEmpty())
+        {{-- Lista de cursos --}}
+        @if ($cursos->isEmpty())
 
             <div class="alert alert-info">
-                Nenhum professor encontrado.
+                Você ainda não possui nenhum curso cadastrado.
             </div>
 
         @else
 
             <ul class="container-fluid d-flex flex-column list-group p-0">
 
-                @foreach ($professores as $professor)
+                @foreach ($cursos as $curso)
 
                     <li class="list-group-item py-4">
 
@@ -65,39 +40,38 @@
 
                             {{-- Nome --}}
                             <div class="col-12 col-md-3 fw-semibold">
-                                {{ $professor->name }}
+                                {{ $curso->name }}
                             </div>
 
-                            {{-- Email --}}
+                            {{-- Aulas --}}
                             <div class="col-12 col-md-3 text-secondary">
-                                {{ $professor->email }}
+                                <strong>Aulas:</strong>
+                                {{ $curso->lessons->count() }}
                             </div>
 
-                            {{-- Quantidade de cursos --}}
+                            {{-- Matriculados --}}
                             <div class="col-12 col-md-3 text-secondary">
-
-                                <strong>Cursos:</strong>
-                                {{ $professor->courses->count() }}
-
+                                <strong>Matriculados:</strong>
+                                {{ $curso->enrollments->count() }}
                             </div>
 
                             {{-- Ações --}}
                             <div class="col-12 col-md-3 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
 
-                                {{-- Ver perfil --}}
+                                {{-- Ver curso --}}
                                 <a
-                                    href="{{ route('adminProfessor', $professor->id) }}"
+                                    href="{{ route('professorMeuCurso', $curso->id) }}"
                                     class="btn btn-outline-primary"
-                                    title="Visualizar perfil"
+                                    title="Visualizar curso"
                                 >
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
 
                                 {{-- Editar --}}
                                 <a
-                                    href="{{ route('adminProfessorEditPage', $professor->id) }}"
+                                    href="{{ route('professorMeuCursoEditPage', $curso->id) }}"
                                     class="btn btn-outline-warning"
-                                    title="Editar professor"
+                                    title="Editar curso"
                                 >
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
@@ -106,9 +80,9 @@
                                 <button
                                     type="button"
                                     class="btn btn-outline-danger"
-                                    title="Deletar professor"
+                                    title="Deletar curso"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#deleteProfessorModal_{{ $professor->id }}"
+                                    data-bs-target="#deleteCursoModal_{{ $curso->id }}"
                                 >
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
@@ -120,12 +94,12 @@
                     </li>
 
 
-                    {{-- Modal de exclusão --}}
+                    {{-- Modal de confirmação --}}
                     <div
                         class="modal fade"
-                        id="deleteProfessorModal_{{ $professor->id }}"
+                        id="deleteCursoModal_{{ $curso->id }}"
                         tabindex="-1"
-                        aria-labelledby="deleteProfessorModalLabel_{{ $professor->id }}"
+                        aria-labelledby="deleteCursoModalLabel_{{ $curso->id }}"
                         aria-hidden="true"
                     >
 
@@ -137,9 +111,9 @@
 
                                     <h5
                                         class="modal-title"
-                                        id="deleteProfessorModalLabel_{{ $professor->id }}"
+                                        id="deleteCursoModalLabel_{{ $curso->id }}"
                                     >
-                                        Deletar professor
+                                        Deletar curso
                                     </h5>
 
                                     <button
@@ -154,18 +128,38 @@
 
                                 <div class="modal-body">
 
-                                    Tem certeza que deseja deletar o professor
-                                    <strong>{{ $professor->name }}</strong>?
+                                    Tem certeza que deseja deletar o curso
+                                    <strong>{{ $curso->name }}</strong>?
 
-                                    @if ($professor->courses->isNotEmpty())
+                                    @if ($curso->lessons->isNotEmpty() || $curso->enrollments->isNotEmpty())
 
                                         <div class="alert alert-warning mt-3 mb-0">
 
                                             <i class="fa-solid fa-triangle-exclamation me-1"></i>
 
-                                            Este professor possui
-                                            <strong>{{ $professor->courses->count() }}</strong>
-                                            curso(s) associado(s).
+                                            Este curso possui:
+
+                                            <ul class="mb-0 mt-2">
+
+                                                @if ($curso->lessons->isNotEmpty())
+
+                                                    <li>
+                                                        <strong>{{ $curso->lessons->count() }}</strong>
+                                                        aula(s) associada(s).
+                                                    </li>
+
+                                                @endif
+
+                                                @if ($curso->enrollments->isNotEmpty())
+
+                                                    <li>
+                                                        <strong>{{ $curso->enrollments->count() }}</strong>
+                                                        aluno(s) matriculado(s).
+                                                    </li>
+
+                                                @endif
+
+                                            </ul>
 
                                         </div>
 
@@ -185,9 +179,10 @@
                                         Não
                                     </button>
 
+
                                     {{-- Sim --}}
                                     <form
-                                        action="{{ route('adminProfessorDestroy', $professor->id) }}"
+                                        action="{{ route('professorMeuCursoDestroy', $curso->id) }}"
                                         method="POST"
                                         class="d-inline"
                                     >
@@ -219,7 +214,7 @@
 
             {{-- Paginação --}}
             <div class="d-flex justify-content-center mt-5">
-                {{ $professores->links() }}
+                {{ $cursos->links() }}
             </div>
 
         @endif

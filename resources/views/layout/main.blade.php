@@ -30,6 +30,10 @@
                 <div class="navbar-nav w-100 justify-content-center column-gap-3">
 
                     @auth
+                        @php 
+                            $role = auth()->user()->role->name
+                        @endphp
+                    @if($role === 'admin')
                         <a class="nav-link active" aria-current="page" href="{{route('adminInicio')}}">Início</a>
                         <a class="nav-link" href="{{ route('adminCursos') }}">Cursos</a>
                         <a class="nav-link" href="{{ route('adminProfessores') }}">Professores</a>
@@ -39,11 +43,29 @@
                             @csrf
                             <button type="submit" class="nav-link btn btn-primary px-3">Logout</button>
                         </form>
+                    @elseif($role === 'professor')
+
+                        <a class="nav-link active" aria-current="page" href="{{route('professorInicio')}}">Início</a>
+                        <a class="nav-link" href="{{ route('professorMeusCursos') }}">Meus Cursos</a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-primary px-3">Logout</button>
+                        </form>
+
+                    @elseif($role === 'student')
+                        <a class="nav-link active" aria-current="page" href="{{route('adminInicio')}}">Início</a>
+                        <a class="nav-link" href="{{ route('professorMeusCursos') }}">Meus Cursos</a>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-primary px-3">Logout</button>
+                        </form>
                     @else
                         <a class="nav-link active" aria-current="page" href="/">Início</a>
                         <a class="nav-link" href="/cursos">Cursos</a>
                         <a class="nav-link" href="/professores">Professores</a>
                         <a class="nav-link btn btn-primary px-3" href="{{ route('loginPage') }}" role="button">Login</a>
+
+                    @endif
                     @endauth
                 </div>
             </div>

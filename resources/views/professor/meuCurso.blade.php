@@ -34,9 +34,11 @@
             <div class="d-flex gap-2">
 
                 {{-- Editar --}}
-                <a href="{{ route('adminCursoEditPage', $curso->id) }}" class="btn btn-primary">
+                <a href="{{ route('professorMeuCursoEditPage', $curso->id) }}" class="btn btn-primary">
+
                     <i class="fa-solid fa-pen-to-square me-1"></i>
                     Editar
+
                 </a>
 
                 {{-- Deletar --}}
@@ -101,9 +103,8 @@
 
             <ul class="container-fluid d-flex flex-column list-group">
 
-                @foreach($curso->lessons as $lesson)
+                @foreach ($curso->lessons as $lesson)
 
-                    {{-- Item da lição --}}
                     <li class="list-group-item py-4">
 
                         <div class="row align-items-center">
@@ -122,7 +123,7 @@
                             {{-- Descrição --}}
                             <div class="col text-secondary" role="button" data-bs-toggle="modal"
                                 data-bs-target="#lessonModal{{ $lesson->id }}">
-                                {{ $lesson->description }}
+                                {{ $lesson->description ?: 'Sem descrição.' }}
                             </div>
 
                             {{-- Ações --}}
@@ -212,7 +213,8 @@
 
                                 </div>
 
-                                <form action="{{ route('adminLessonEdit', $lesson->id) }}" method="POST">
+
+                                <form action="{{ route('professorLessonEdit', $lesson->id) }}" method="POST">
 
                                     @csrf
                                     @method('PUT')
@@ -312,7 +314,8 @@
                                         Não
                                     </button>
 
-                                    <form action="{{ route('adminLessonDestroy', $lesson->id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('professorLessonDestroy', $lesson->id) }}" method="POST"
+                                        class="d-inline">
 
                                         @csrf
                                         @method('DELETE')
@@ -357,7 +360,7 @@
                     </div>
 
 
-                    <form action="{{ route('adminLessonCreate', $curso->id) }}" method="POST">
+                    <form action="{{ route('professorLessonCreate', $curso->id) }}" method="POST">
 
                         @csrf
 
@@ -428,19 +431,11 @@
         {{-- Alunos matriculados --}}
         <div class="mt-3">
 
-            {{-- Cabeçalho da seção --}}
             <div class="d-flex justify-content-between align-items-center">
 
                 <h5 class="mb-0">
                     Alunos matriculados - {{ $curso->enrollments->count() }}
                 </h5>
-
-                {{-- Matricular aluno --}}
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#createEnrollmentModal">
-                    <i class="fa-solid fa-plus me-1"></i>
-                    Matricular aluno
-                </button>
 
             </div>
 
@@ -471,11 +466,7 @@
 
                                 {{-- Nome --}}
                                 <div class="col-4 fw-semibold">
-
-                                    <a href="{{ route('adminStudent', $enrollment->student_id) }}" class="text-decoration-none">
-                                        {{ $enrollment->student->name }}
-                                    </a>
-
+                                    {{ $enrollment->student->name }}
                                 </div>
 
                                 {{-- Email --}}
@@ -502,20 +493,13 @@
 
                                 </div>
 
-                                {{-- Ações --}}
-                                <div class="col-auto d-flex align-items-center gap-2">
+                                {{-- Visualizar aluno --}}
+                                <div class="col-auto">
 
-                                    {{-- Ver aluno --}}
-                                    <a href="{{ route('adminStudent', $enrollment->student_id) }}" class="btn btn-outline-primary"
-                                        title="Visualizar aluno">
+                                    <a href="{{ route('professorStudent', $enrollment->student_id) }}"
+                                        class="btn btn-outline-primary" title="Visualizar aluno">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-
-                                    {{-- Deletar matrícula --}}
-                                    <button type="button" class="btn btn-outline-danger" title="Remover matrícula"
-                                        data-bs-toggle="modal" data-bs-target="#deleteEnrollmentModal{{ $enrollment->id }}">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
 
                                 </div>
 
@@ -523,158 +507,11 @@
 
                         </li>
 
-
-                        {{-- Modal para deletar matrícula --}}
-                        <div class="modal fade" id="deleteEnrollmentModal{{ $enrollment->id }}" tabindex="-1"
-                            aria-labelledby="deleteEnrollmentModalLabel{{ $enrollment->id }}" aria-hidden="true">
-
-                            <div class="modal-dialog">
-
-                                <div class="modal-content">
-
-                                    <div class="modal-header">
-
-                                        <h5 class="modal-title" id="deleteEnrollmentModalLabel{{ $enrollment->id }}">
-                                            Remover matrícula
-                                        </h5>
-
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Fechar"></button>
-
-                                    </div>
-
-                                    <div class="modal-body">
-
-                                        Tem certeza que deseja remover a matrícula de
-                                        <strong>{{ $enrollment->student->name }}</strong>
-                                        do curso
-                                        <strong>{{ $curso->name }}</strong>?
-
-                                    </div>
-
-                                    <div class="modal-footer">
-
-                                        {{-- Não --}}
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            Não
-                                        </button>
-
-                                        {{-- Sim --}}
-                                        <form action="{{ route('adminEnrollmentDestroy', $enrollment->id) }}" method="POST"
-                                            class="d-inline">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit" class="btn btn-danger">
-                                                Sim, remover
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
                     @endforeach
 
                 </ul>
 
             @endif
-
-        </div>
-
-
-        {{-- Modal para matricular aluno --}}
-        <div class="modal fade" id="createEnrollmentModal" tabindex="-1" aria-labelledby="createEnrollmentModalLabel"
-            aria-hidden="true">
-
-            <div class="modal-dialog modal-dialog-centered">
-
-                <div class="modal-content">
-
-                    <div class="modal-header">
-
-                        <h5 class="modal-title" id="createEnrollmentModalLabel">
-                            Matricular aluno
-                        </h5>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-
-                    </div>
-
-
-                    <form action="{{ route('adminEnrollmentCreate') }}" method="POST">
-
-                        @csrf
-
-                        <div class="modal-body">
-
-                            {{-- Curso --}}
-                            <div class="mb-3">
-
-                                <label class="form-label">
-                                    Curso
-                                </label>
-
-                                <input type="text" class="form-control" value="{{ $curso->name }}" disabled>
-
-                                {{-- O curso é enviado pelo formulário --}}
-                                <input type="hidden" name="course_id" value="{{ $curso->id }}">
-
-                            </div>
-
-
-                            {{-- Aluno --}}
-                            <div>
-
-                                <label for="student_id" class="form-label">
-                                    Aluno
-                                </label>
-
-                                <select id="student_id" name="student_id" class="form-select" required>
-
-                                    <option value="">
-                                        Selecione um aluno
-                                    </option>
-
-                                    @foreach ($alunos as $aluno)
-
-                                        <option value="{{ $aluno->id }}">
-                                            {{ $aluno->name }}
-                                            — {{ $aluno->email }}
-                                        </option>
-
-                                    @endforeach
-
-                                </select>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="modal-footer">
-
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                Cancelar
-                            </button>
-
-                            <button type="submit" class="btn btn-primary">
-                                Matricular aluno
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                </div>
-
-            </div>
 
         </div>
 
@@ -745,7 +582,7 @@
                         Não
                     </button>
 
-                    <form action="{{ route('adminCursoDestroy', $curso->id) }}" method="POST" class="d-inline">
+                    <form action="{{ route('professorMeuCursoDestroy', $curso->id) }}" method="POST" class="d-inline">
 
                         @csrf
                         @method('DELETE')

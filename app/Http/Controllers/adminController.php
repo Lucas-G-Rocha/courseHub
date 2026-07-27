@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\Professor;
 use App\Models\Role;
@@ -192,8 +193,9 @@ class adminController extends Controller
     public function adminCurso($id)
     {
         $curso = Course::find($id);
+        $alunos = Student::all();
         if ($curso) {
-            return view('admin.curso', compact('curso'));
+            return view('admin.curso', compact('curso', 'alunos'));
         } else {
             return redirect()->route('adminCursos')->with('fail', 'Curso não encontrado!');
         }
@@ -372,9 +374,12 @@ class adminController extends Controller
 
     public function adminStudent($id)
     {
-        $student = Student::findOrFail($id)->firstOrFail();
+        $aluno = Student::find($id);
+        if (!$aluno) {
+            return redirect()->route('adminStudents')->with('fail', 'Aluno inválido');
+        }
 
-        return view('admin.aluno', compact('student'));
+        return view('admin.aluno', compact('aluno'));
     }
 
     public function adminStudentCreatePage()
@@ -382,10 +387,94 @@ class adminController extends Controller
 
     }
 
-    public function adminStudentEditPage()
+    public function adminStudentEditPage($id)
+    {
+        $aluno = Student::find($id);
+
+        if (!$aluno) {
+            return redirect()->route('adminStudents')->with('fail', 'Estudante Não encontrado!');
+        }
+
+        return view('admin.alunoEdit', compact('aluno'));
+    }
+
+    public function adminStudentEdit(Request $request, $id)
+    {
+        $aluno = Student::find($id);
+
+        if (!$aluno) {
+            return back()->with('fail', 'Estudante Não encontrado!')->withInput();
+        }
+
+        $credentials = $request->validate([
+            'name' => ['required', 'string'],
+            'email' => ['required', 'string'],
+            'birth_date' => ['required'],
+        ]);
+
+        $updatedStudent = Student::where('id', $id)->update([
+            'name' => $credentials['name'],
+            'email' => $credentials['email'],
+            'birth_date' => $credentials['birth_date']
+        ]);
+
+        if ($updatedStudent) {
+            return redirect()->route('adminStudent', $id)->with('success', 'Aluno atualizado!');
+        } else {
+            return back()->with('fail', 'Erro ao atualizar Aluno')->withinput();
+        }
+    }
+
+    public function adminStudentDestroy($id)
+    {
+        $deletedStudent = Student::destroy($id);
+
+        if ($deletedStudent) {
+            return redirect()->route('adminStudents')->with('success', 'Aluno e matriculas deletadas!');
+        } else {
+            return back()->with('fail', 'Ocorreu um erro ao deletar aluno');
+        }
+    }
+
+    public function adminEnrollmentCreate(Request $request)
     {
 
+        $credentials = $request->validate([
+            'student_id' => ['required', 'integer', 'min:1'],
+            'course_id' => ['required', 'integer', 'min:1'],
+        ]);
+
+        $student = Student::find($credentials['student_id']);
+        if (!$student) {
+            return back()->with('fail', 'Estudante Inválido');
+        }
+
+        $course = Course::find($credentials['course_id']);
+        if (!$course) {
+            return back()->with('fail', 'Curso Inválido');
+        }
+
+        $isCreated = Enrollment::create([
+            'student_id' => $credentials['student_id'],
+            'course_id' => $credentials['course_id']
+        ]);
+
+        if (!$isCreated) {
+            return back()->with('fail', 'Erro ao cadastrar Inscrição!');
+        }
+
+        return back()->with('success', 'Inscrição Cadastrada!');
+    }
+
+    public function adminEnrollmentDestroy($id)
+    {
+        $isDestroyed = Enrollment::destroy($id);
+
+        if ($isDestroyed) {
+            return back()->with('success', 'Inscrição Deletada');
+        } else {
+            return back()->with('fail', 'Erro ao deletar inscrição');
+        }
     }
 
 }
-
