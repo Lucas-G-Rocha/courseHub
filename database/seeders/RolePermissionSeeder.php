@@ -23,6 +23,8 @@ class RolePermissionSeeder extends Seeder
             Permission::all()
         );
         $professor->permissions()->sync([
+            Permission::where('name', 'read_professor')->firstOrFail()->id,
+            Permission::where('name', 'update_professor')->firstOrFail()->id,
             Permission::where('name', 'create_course')->firstOrFail()->id,
             Permission::where('name', 'read_course')->firstOrFail()->id,
             Permission::where('name', 'update_course')->firstOrFail()->id,
@@ -41,11 +43,15 @@ class RolePermissionSeeder extends Seeder
         $student->permissions()->sync([
             Permission::where('name', 'read_lesson')->firstOrFail()->id,
             Permission::where('name', 'read_course')->firstOrFail()->id,
-            
+
+            Permission::where('name', 'create_enrollment')->firstOrFail()->id,
             Permission::where('name', 'delete_enrollment')->firstOrFail()->id,
             Permission::where('name', 'read_enrollment')->firstOrFail()->id,
             Permission::where('name', 'update_enrollment')->firstOrFail()->id,
-            Permission::where('name', 'read_professor')->firstOrFail()->id
+            Permission::where('name', 'read_professor')->firstOrFail()->id,
+            Permission::where('name', 'read_student')->firstOrFail()->id,
+            Permission::where('name', 'update_student')->firstOrFail()->id
+
         ]);
 
 

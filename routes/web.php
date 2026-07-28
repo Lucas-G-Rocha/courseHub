@@ -20,15 +20,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::middleware('authorization')->group(function () {
-
-
     Route::get('/', [generalController::class, 'index'])->name('home');
 
+    Route::get('/testeguzzle', function () {
+        $response = Http::get('https://jsonplaceholder.typicode.com/posts')->json();
+
+        return view('testeguzzle', compact('response'));
+    });
+
     // Auth
-    Route::get('/login', [authController::class, 'loginPage'])->name('loginPage')->middleware('isNotLoggedIn');
-    Route::post('/api/login', [authController::class, 'login'])->name('login')->middleware('isNotLoggedIn');
-    Route::post('/api/logout', [authController::class, 'logout'])->name('logout')->middleware('isLoggedIn');
+    Route::get('/login', [authController::class, 'loginPage'])->name('loginPage'); 
+    Route::post('/api/login', [authController::class, 'login'])->name('login');      
+    Route::post('/api/logout', [authController::class, 'logout'])->name('logout'); 
 
 
     //Cursos
