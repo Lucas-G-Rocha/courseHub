@@ -38,7 +38,7 @@ class authController extends Controller
             }
 
         }else{
-            return back()->with('false', 'Email ou Senha incorretos')->withInput();
+            return back()->with('fail', 'Email ou Senha incorretos')->withInput();
         }
     }
 

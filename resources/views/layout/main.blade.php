@@ -53,8 +53,8 @@
                         </form>
 
                     @elseif($role === 'student')
-                        <a class="nav-link active" aria-current="page" href="{{route('adminInicio')}}">Início</a>
-                        <a class="nav-link" href="{{ route('professorMeusCursos') }}">Meus Cursos</a>
+                        <a class="nav-link active" aria-current="page" href="{{route('studentInicio')}}">Início</a>
+                        <a class="nav-link" href="{{ route('studentMeusCursos') }}">Meus Cursos</a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="nav-link btn btn-primary px-3">Logout</button>
@@ -77,7 +77,7 @@
         </div>
 
     @elseif(session('fail'))
-        <div class="alert alert-danger position-fixed  end-0 w-25 z-3" style="">
+        <div class="alert alert-danger position-fixed end-0 w-25 z-3" style="top: 80px;>
             <p class="fs-5">{{ session('fail') }}</p>
         </div>
     @endif
