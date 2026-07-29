@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -14,19 +15,11 @@ class authController extends Controller
         return view('login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['min:5', 'max:15', 'required']
-        ], [
-            'email.required' => 'Email não pode estar vazio',
-            'email.email' => 'Formato do email deve ser válido',
-            'password.required' => 'Senha não pode estar vazia',
-            'password.min' => 'Senha deve ter mais que 5 caracteres',
-            'password.max' => 'Senha deve ter menos que 15 caracteres'
-        ]);
-        if(Auth::attempt($credentials)) {
+        $credentials = $request->validated();
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
             $user = Auth::user();
             switch ($user->role->name) {
                 case 'admin':
@@ -35,19 +28,26 @@ class authController extends Controller
                     return redirect(route('professorInicio'))->with('success', 'Logado com sucesso');
                 case 'student':
                     return redirect(route('studentInicio'))->with('success', 'Logado com sucesso');
+
+                default:
+                    Auth::logout();
+
+                    return redirect()->route('login')
+                        ->with('fail', 'Tipo de usuário inválido.');
             }
 
-        }else{
-            return back()->with('fail', 'Email ou Senha incorretos')->withInput();
+        } else {
+            return back()->with('fail', 'Email ou Senha incorretos')->withInput($request->except('password'));
         }
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         Auth::logout();
-        
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect(route('loginPage'))->with('success','Deslogado com Sucesso!');
+        return redirect(route('loginPage'))->with('success', 'Deslogado com Sucesso!');
     }
 
 }

@@ -2,6 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\adminCursoCreateRequest;
+use App\Http\Requests\adminCursoEditRequest;
+use App\Http\Requests\adminEnrollmentCreateRequest;
+use App\Http\Requests\adminLessonCreateRequest;
+use App\Http\Requests\adminLessonEditRequest;
+use App\Http\Requests\adminProfessorCreateRequest;
+use App\Http\Requests\adminProfessorEditRequest;
+use App\Http\Requests\adminStudentCreateRequest;
+use App\Http\Requests\adminStudentEditRequest;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
@@ -48,31 +57,18 @@ class adminController extends Controller
     {
         return view('admin.professorCreate');
     }
-    public function adminProfessorCreate(Request $request)
+    public function adminProfessorCreate(adminProfessorCreateRequest $request)
     {
-        // 1. Trata o checkbox/flag corretamente (retorna true ou false)
-        $createUser = $request->boolean('create_user');
 
-        // 2. Monta as regras de validação dinamicamente
-        $rules = [
-            'name' => ['required', 'string', 'min:3', 'max:100'],
-            'email' => ['required', 'email'],
-            'bio' => ['nullable', 'string', 'max:255'],
-        ];
-
-        if ($createUser) {
-            $rules['password'] = ['required', 'min:5', 'max:12', 'confirmed'];
-        }
-
-        $credentials = $request->validate($rules);
+        $credentials = $request->validated();
 
         // 3. Transaction tratada com try/catch
         try {
-            DB::transaction(function () use ($credentials, $createUser) {
+            DB::transaction(function () use ($credentials, $request) {
                 $userId = null;
 
                 // Se for para criar o usuário primeiro
-                if ($createUser) {
+                if ($request->boolean('create_user')) {
 
                     $roleId = Role::where('name', 'professor')->firstOrFail()->id;
                     $user = User::create([
@@ -121,23 +117,11 @@ class adminController extends Controller
         }
     }
 
-    public function adminProfessorEdit(Request $request, $id)
+    public function adminProfessorEdit(adminProfessorEditRequest $request, $id)
     {
-        $rules = [
-            'name' => ['required', 'string', 'min:3', 'max:100'],
-            'email' => ['required', 'email'],
-            'bio' => ['nullable', 'string', 'max:255'],
-        ];
 
         $professor = Professor::findOrFail($id);
-
-        if ($professor->user) {
-            $rules['password'] = ['nullable', 'min:5', 'max:12', 'confirmed'];
-            $rules['user_name'] = ['required', 'string', 'min:3', 'max:100'];
-            $rules['user_email'] = ['required', 'email'];
-        }
-
-        $credentials = $request->validate($rules);
+        $credentials = $request->validated();
 
 
         try {
@@ -165,7 +149,7 @@ class adminController extends Controller
             return redirect()->route('adminProfessor', $professor->id)->with('success', 'Professor Editado com Sucesso');
 
         } catch (\Exception $e) {
-
+            return redirect()->back()->with('fail', 'Ocorreu um erro inesperado');
         }
     }
 
@@ -208,15 +192,9 @@ class adminController extends Controller
         return view('admin.cursoCreate', compact('professores'));
     }
 
-    public function adminCursoCreate(Request $request)
+    public function adminCursoCreate(adminCursoCreateRequest $request)
     {
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'professor_id' => ['required', 'integer', 'min:1'],
-            'workload' => ['required', 'integer', 'min:0'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'description' => ['nullable', 'string']
-        ]);
+        $credentials = $request->validated();
 
         $professorExists = Professor::where('id', $request->professor_id)->exists();
         if (!$professorExists) {
@@ -251,15 +229,9 @@ class adminController extends Controller
         }
     }
 
-    public function adminCursoEdit(Request $request, $id)
+    public function adminCursoEdit(adminCursoEditRequest $request, $id)
     {
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'price' => ['required'],
-            'workload' => ['required'],
-            'professor_id' => ['nullable']
-        ]);
+        $credentials = $request->validated();
 
         $professorExists = Professor::where('id', $id)->exists();
 
@@ -294,7 +266,7 @@ class adminController extends Controller
 
     }
 
-    public function adminLessonCreate(Request $request, $id)
+    public function adminLessonCreate(adminLessonCreateRequest $request, $id)
     {
         $course = Course::find($id);
 
@@ -302,11 +274,7 @@ class adminController extends Controller
             return back()->with('fail', 'Curso não encontrado');
         }
 
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'content' => ['required', 'string']
-        ]);
+        $credentials = $request->validated();
         try {
             Lesson::create([
                 'name' => $credentials['name'],
@@ -334,7 +302,7 @@ class adminController extends Controller
 
     }
 
-    public function adminLessonEdit(Request $request, $id)
+    public function adminLessonEdit(adminLessonEditRequest $request, $id)
     {
         $lesson = Lesson::where('id', $id)->exists();
 
@@ -342,11 +310,7 @@ class adminController extends Controller
             return back()->with('fail', 'Lição não existe');
         }
 
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'content' => ['required', 'string']
-        ]);
+        $credentials = $request->validated();
 
         $updatedLesson = Lesson::where('id', $id)->update([
             'name' => $credentials['name'],
@@ -384,9 +348,56 @@ class adminController extends Controller
 
     public function adminStudentCreatePage()
     {
-
+        return view('admin.alunoCreate');
     }
 
+    public function adminStudentCreate(adminStudentCreateRequest $request)
+    {
+        $credentials = $request->validated();
+
+        try {
+            DB::transaction(function () use ($credentials, $request) {
+                $userId = null;
+
+                // Se for para criar o usuário primeiro
+                if ($request->boolean('create_user')) {
+
+                    $roleId = Role::where('name', 'student')
+                        ->firstOrFail()
+                        ->id;
+
+                    $user = User::create([
+                        'name' => $credentials['name'],
+                        'email' => $credentials['email'],
+                        'password' => Hash::make($credentials['password']),
+                        'role_id' => $roleId,
+                    ]);
+
+                    $userId = $user->id;
+                }
+                // Cria o aluno
+                Student::create([
+                    'name' => $credentials['name'],
+                    'email' => $credentials['email'],
+                    'birth_date' => $credentials['birth_date'],
+                    'user_id' => $userId,
+                ]);
+            });
+
+            return back()->with(
+                'success',
+                'Aluno cadastrado com sucesso.'
+            );
+
+        } catch (\Throwable $e) {
+            return back()
+                ->with(
+                    'fail',
+                    'Erro ao cadastrar aluno. ' . $e->getMessage()
+                )
+                ->withInput();
+        }
+    }
     public function adminStudentEditPage($id)
     {
         $aluno = Student::find($id);
@@ -398,7 +409,7 @@ class adminController extends Controller
         return view('admin.alunoEdit', compact('aluno'));
     }
 
-    public function adminStudentEdit(Request $request, $id)
+    public function adminStudentEdit(adminStudentEditRequest $request, $id)
     {
         $aluno = Student::find($id);
 
@@ -406,11 +417,7 @@ class adminController extends Controller
             return back()->with('fail', 'Estudante Não encontrado!')->withInput();
         }
 
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'email' => ['required', 'string'],
-            'birth_date' => ['required'],
-        ]);
+        $credentials = $request->validated();
 
         $updatedStudent = Student::where('id', $id)->update([
             'name' => $credentials['name'],
@@ -436,13 +443,10 @@ class adminController extends Controller
         }
     }
 
-    public function adminEnrollmentCreate(Request $request)
+    public function adminEnrollmentCreate(adminEnrollmentCreateRequest $request)
     {
 
-        $credentials = $request->validate([
-            'student_id' => ['required', 'integer', 'min:1'],
-            'course_id' => ['required', 'integer', 'min:1'],
-        ]);
+        $credentials = $request->validated();
 
         $student = Student::find($credentials['student_id']);
         if (!$student) {

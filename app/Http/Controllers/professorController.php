@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\professorLessonCreateRequest;
+use App\Http\Requests\professorLessonEditRequest;
+use App\Http\Requests\professorMeuCursoCreateRequest;
+use App\Http\Requests\professorMeuCursoEditRequest;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Professor;
@@ -62,15 +66,10 @@ class professorController extends Controller
     }
 
     // Criar curso
-    public function professorMeuCursoCreate(Request $request)
+    public function professorMeuCursoCreate(professorMeuCursoCreateRequest $request)
     {
         $professor = auth()->user()->professor;
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'workload' => ['required', 'integer', 'min:0'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'description' => ['nullable', 'string']
-        ]);
+        $credentials = $request->validated();
 
         try {
 
@@ -101,15 +100,10 @@ class professorController extends Controller
     }
 
     // Editar curso
-    public function professorMeuCursoEdit(Request $request, $id)
+    public function professorMeuCursoEdit(professorMeuCursoEditRequest $request, $id)
     {
         $professor = auth()->user()->professor;
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'price' => ['required'],
-            'workload' => ['required']
-        ]);
+        $credentials = $request->validated();
 
         $updatedCourse = $professor->courses()->where(['id' => $id])->update([
             'name' => $credentials['name'],
@@ -146,7 +140,7 @@ class professorController extends Controller
         return redirect()->route('professorMeusCursos')->with('success', 'Curso deletado com sucesso!');
     }
 
-    public function professorLessonCreate(Request $request, $id)
+    public function professorLessonCreate(professorLessonCreateRequest $request, $id)
     {
         $professor = auth()->user()->professor;
 
@@ -158,11 +152,7 @@ class professorController extends Controller
             return back()->with('fail', 'Curso não encontrado');
         }
 
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'content' => ['required', 'string'],
-        ]);
+        $credentials = $request->validated();
 
         try {
 
@@ -183,7 +173,7 @@ class professorController extends Controller
         }
     }
 
-    public function professorLessonEdit(Request $request, $id)
+    public function professorLessonEdit(professorLessonEditRequest $request, $id)
     {
         $professor = auth()->user()->professor;
 
@@ -197,11 +187,7 @@ class professorController extends Controller
             return back()->with('fail', 'Lição não encontrada');
         }
 
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'content' => ['required', 'string'],
-        ]);
+        $credentials = $request->validated();
 
         $updatedLesson = $lesson->update([
             'name' => $credentials['name'],

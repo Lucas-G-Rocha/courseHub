@@ -17,7 +17,7 @@
     <title>@yield('title')</title>
 </head>
 
-<body class="position-relative" style="padding-bottom: 40px">
+<body class="position-relative">
 
     <nav class="navbar position-fixed fixed-top navbar-expand-lg bg-secondary-subtle z-2">
         <div class="container">

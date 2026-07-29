@@ -282,7 +282,7 @@ class authorization
                 'permissions' => [
                     'read_course',
                     'read_lesson',
-                    'read_students'
+                    'read_student'
                 ],
                 'roles' => ['professor']
             ],
@@ -418,6 +418,8 @@ class authorization
             ],
         ];
 
+
+
         if (!isset($routeRequirements[$routeName])) {
             return $next($request);
         } elseif (!Auth::check()) {
@@ -430,6 +432,8 @@ class authorization
 
 
         $protectedRoute = isset($routeRequirements[$routeName]);
+
+
 
         if (!$protectedRoute) {
             return $next($request);

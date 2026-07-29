@@ -32,9 +32,9 @@ Route::middleware('authorization')->group(function () {
     });
 
     // Auth
-    Route::get('/login', [authController::class, 'loginPage'])->name('loginPage'); 
-    Route::post('/api/login', [authController::class, 'login'])->name('login');      
-    Route::post('/api/logout', [authController::class, 'logout'])->name('logout'); 
+    Route::get('/login', [authController::class, 'loginPage'])->name('loginPage');
+    Route::post('/api/login', [authController::class, 'login'])->name('login');
+    Route::post('/api/logout', [authController::class, 'logout'])->name('logout');
 
 
     //Cursos
@@ -67,6 +67,8 @@ Route::middleware('authorization')->group(function () {
 
     Route::get('/admin/alunos', [adminController::class, 'adminStudents'])->name('adminStudents');
     Route::get('/admin/alunos/create', [adminController::class, 'adminStudentCreatePage'])->name('adminStudentCreatePage');
+    Route::post('/admin/alunos/create', [adminController::class, 'adminStudentCreate'])->name('adminStudentCreate');
+
     Route::get('/admin/aluno/{id}', [adminController::class, 'adminStudent'])->name('adminStudent');
     Route::get('/admin/aluno/edit/{id}', [adminController::class, 'adminStudentEditPage'])->name('adminStudentEditPage');
     Route::put('/admin/aluno/edit/{id}', [adminController::class, 'adminStudentEdit'])->name('adminStudentEdit');
@@ -84,9 +86,9 @@ Route::middleware('authorization')->group(function () {
     Route::get('/professor/meu-curso/create', [professorController::class, 'professorMeuCursoCreatePage'])->name('professorMeuCursoCreatePage');
     Route::post('/professor/meu-curso/create', [professorController::class, 'professorMeuCursoCreate'])->name('professorMeuCursoCreate');
     Route::get('/professor/meu-curso/{id}', [professorController::class, 'professorMeuCurso'])->name('professorMeuCurso');
-    Route::get('/professor/meus-cursos/edit/{id}', [professorController::class, 'professorMeuCursoEditPage'])->name('professorMeuCursoEditPage');
-    Route::put('/professor/meus-cursos/edit/{id}', [professorController::class, 'professorMeuCursoEdit'])->name('professorMeuCursoEdit');
-    Route::delete('/professor/meus-cursos/destroy/{id}', [professorController::class, 'professorMeuCursoDestroy'])->name('professorMeuCursoDestroy');
+    Route::get('/professor/meu-curso/edit/{id}', [professorController::class, 'professorMeuCursoEditPage'])->name('professorMeuCursoEditPage');
+    Route::put('/professor/meu-curso/edit/{id}', [professorController::class, 'professorMeuCursoEdit'])->name('professorMeuCursoEdit');
+    Route::delete('/professor/meu-curso/destroy/{id}', [professorController::class, 'professorMeuCursoDestroy'])->name('professorMeuCursoDestroy');
 
     Route::post('/professor/lesson/create/{id}', [professorController::class, 'professorLessonCreate'])->name('professorLessonCreate');
     Route::get('/professor/lesson/edit/{id}', [professorController::class, 'professorLessonEditPage'])->name('professorLessonEditPage');
