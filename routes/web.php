@@ -33,8 +33,8 @@ Route::middleware('authorization')->group(function () {
 
     // Auth
     Route::get('/login', [authController::class, 'loginPage'])->name('loginPage');
-    Route::post('/api/login', [authController::class, 'login'])->name('login');
-    Route::post('/api/logout', [authController::class, 'logout'])->name('logout');
+    Route::post('/api-web/login', [authController::class, 'login'])->name('login');
+    Route::post('/api-web/logout', [authController::class, 'logout'])->name('logout');
 
 
     //Cursos
