@@ -16,28 +16,17 @@
                 {{-- Search --}}
                 <form action="{{ route('adminCursos') }}" method="GET" class="d-flex">
 
-                    <input
-                        type="search"
-                        name="search"
-                        class="form-control"
-                        placeholder="Buscar curso..."
-                        value="{{ request('search') }}"
-                    >
+                    <input type="search" name="search" class="form-control" placeholder="Buscar curso..."
+                        value="{{ request('search') }}">
 
-                    <button
-                        type="submit"
-                        class="btn btn-outline-primary ms-2"
-                    >
+                    <button type="submit" class="btn btn-outline-primary ms-2">
                         Buscar
                     </button>
 
                 </form>
 
                 {{-- Cadastrar --}}
-                <a
-                    href="{{ route('adminCursoCreatePage') }}"
-                    class="btn btn-primary"
-                >
+                <a href="{{ route('adminCursoCreatePage') }}" class="btn btn-primary">
                     Cadastrar Curso
                 </a>
 
@@ -59,184 +48,128 @@
 
                 @foreach ($cursos as $curso)
 
-                    <li class="list-group-item py-4">
+                    @php
+                        $id = "deleteCursoModal_" . $curso->id;
+                        $title = "Deletar Curso";
+                        $ariaLabelId = "deleteCursoModalLabel_" . $curso->id;
+                        $description = "Tem certeza que deseja deletar o curso";
+                        $dados = $curso;
+                        $dependanceDescription = "Este curso possui";
+                        $countDependances = [
+                            [
+                                "name" => "Aulas",
+                                "count" => $curso->lessons->count()
+                            ],
+                            [
+                                "name" => "Alunos Matriculados",
+                                "count" => $curso->enrollments->count()
+                            ]
+                        ];
+                        $formRoute = route('adminCursoDestroy', $curso->id);
+                    @endphp
 
-                        <div class="row align-items-center">
+                    <x-course-card :curso="$curso" />
 
-                            {{-- Nome --}}
-                            <div class="col-12 col-md-3 fw-semibold">
-                                {{ $curso->name }}
-                            </div>
+                    <x-modal.confirmation-delete 
+                        id="{{$id}}"
+                        title="{{$title}}"
+                        ariaLabelId="{{ $ariaLabelId }}"
+                        description="{{ $description }}"
+                        :dados="$dados"
+                        :countDependances="$countDependances"
+                        dependanceDescription="{{ $dependanceDescription }}"
+                        formRoute="{{ $formRoute }}"
 
-                            {{-- Professor --}}
-                            <div class="col-12 col-md-3 text-secondary">
-                                <strong>Professor:</strong>
-                                {{ $curso->professor->name }}
-                            </div>
+                    />
 
-                            {{-- Aulas --}}
-                            <div class="col-12 col-md-2 text-secondary">
-                                <strong>Aulas:</strong>
-                                {{ $curso->lessons->count() }}
-                            </div>
+                    <!-- {{-- Modal de confirmação --}}
+                                <div class="modal fade" id="deleteCursoModal_{{ $curso->id }}" tabindex="-1"
+                                    aria-labelledby="deleteCursoModalLabel_{{ $curso->id }}" aria-hidden="true">
 
-                            {{-- Matriculados --}}
-                            <div class="col-12 col-md-2 text-secondary">
-                                <strong>Matriculados:</strong>
-                                {{ $curso->enrollments->count() }}
-                            </div>
+                                    <div class="modal-dialog">
 
-                            {{-- Ações --}}
-                            <div class="col-12 col-md-2 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+                                        <div class="modal-content">
 
-                                {{-- Ver curso --}}
-                                <a
-                                    href="{{ route('adminCurso', $curso->id) }}"
-                                    class="btn btn-outline-primary"
-                                    title="Visualizar curso"
-                                >
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
+                                            <div class="modal-header">
 
-                                {{-- Editar --}}
-                                <a
-                                    href="{{ route('adminCursoEditPage', $curso->id) }}"
-                                    class="btn btn-outline-warning"
-                                    title="Editar curso"
-                                >
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
+                                                <h5 class="modal-title" id="deleteCursoModalLabel_{{ $curso->id }}">
+                                                    Deletar curso
+                                                </h5>
 
-                                {{-- Deletar --}}
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-danger"
-                                    title="Deletar curso"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteCursoModal_{{ $curso->id }}"
-                                >
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 
-                            </div>
-
-                        </div>
-
-                    </li>
+                                            </div>
 
 
-                    {{-- Modal de confirmação --}}
-                    <div
-                        class="modal fade"
-                        id="deleteCursoModal_{{ $curso->id }}"
-                        tabindex="-1"
-                        aria-labelledby="deleteCursoModalLabel_{{ $curso->id }}"
-                        aria-hidden="true"
-                    >
+                                            <div class="modal-body">
 
-                        <div class="modal-dialog">
+                                                Tem certeza que deseja deletar o curso
+                                                <strong>{{ $curso->name }}</strong>?
 
-                            <div class="modal-content">
+                                                @if ($curso->lessons->isNotEmpty() || $curso->enrollments->isNotEmpty())
 
-                                <div class="modal-header">
+                                                    <div class="alert alert-warning mt-3 mb-0">
 
-                                    <h5
-                                        class="modal-title"
-                                        id="deleteCursoModalLabel_{{ $curso->id }}"
-                                    >
-                                        Deletar curso
-                                    </h5>
+                                                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
 
-                                    <button
-                                        type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Fechar"
-                                    ></button>
+                                                        Este curso possui:
 
-                                </div>
+                                                        <ul class="mb-0 mt-2">
 
+                                                            @if ($curso->lessons->isNotEmpty())
 
-                                <div class="modal-body">
+                                                                <li>
+                                                                    <strong>{{ $curso->lessons->count() }}</strong>
+                                                                    aula(s) associada(s).
+                                                                </li>
 
-                                    Tem certeza que deseja deletar o curso
-                                    <strong>{{ $curso->name }}</strong>?
+                                                            @endif
 
-                                    @if ($curso->lessons->isNotEmpty() || $curso->enrollments->isNotEmpty())
+                                                            @if ($curso->enrollments->isNotEmpty())
 
-                                        <div class="alert alert-warning mt-3 mb-0">
+                                                                <li>
+                                                                    <strong>{{ $curso->enrollments->count() }}</strong>
+                                                                    aluno(s) matriculado(s).
+                                                                </li>
 
-                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                                            @endif
 
-                                            Este curso possui:
+                                                        </ul>
 
-                                            <ul class="mb-0 mt-2">
-
-                                                @if ($curso->lessons->isNotEmpty())
-
-                                                    <li>
-                                                        <strong>{{ $curso->lessons->count() }}</strong>
-                                                        aula(s) associada(s).
-                                                    </li>
+                                                    </div>
 
                                                 @endif
 
-                                                @if ($curso->enrollments->isNotEmpty())
+                                            </div>
 
-                                                    <li>
-                                                        <strong>{{ $curso->enrollments->count() }}</strong>
-                                                        aluno(s) matriculado(s).
-                                                    </li>
 
-                                                @endif
+                                            <div class="modal-footer">
 
-                                            </ul>
+                                                {{-- Não --}}
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Não
+                                                </button>
+
+
+                                                {{-- Sim --}}
+                                                <form action="{{ route('adminCursoDestroy', $curso->id) }}" method="POST" class="d-inline">
+
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Sim, deletar
+                                                    </button>
+
+                                                </form>
+
+                                            </div>
 
                                         </div>
 
-                                    @endif
+                                    </div>
 
-                                </div>
-
-
-                                <div class="modal-footer">
-
-                                    {{-- Não --}}
-                                    <button
-                                        type="button"
-                                        class="btn btn-secondary"
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Não
-                                    </button>
-
-
-                                    {{-- Sim --}}
-                                    <form
-                                        action="{{ route('adminCursoDestroy', $curso->id) }}"
-                                        method="POST"
-                                        class="d-inline"
-                                    >
-
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-danger"
-                                        >
-                                            Sim, deletar
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                                </div> -->
 
                 @endforeach
 

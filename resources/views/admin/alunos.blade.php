@@ -48,127 +48,103 @@
 
                 @foreach ($students as $aluno)
 
-                    <li class="list-group-item py-4">
+                    @php
+                        $id = "deleteAlunoModal_" . $aluno->id;
+                        $title = "Deletar Aluno";
+                        $ariaLabelId = "deleteAlunoModalLabel_" . $aluno->id;
+                        $description = "Tem certeza que deseja deletar o aluno";
+                        $dados = $aluno;
+                        $dependanceDescription = "Este aluno possui";
+                        $countDependances = [
+                            [
+                                "name" => "matrículas",
+                                "count" => $aluno->enrollments->count()
+                            ]
+                        ];
+                        $formRoute = route('adminStudentDestroy', $aluno->id);
+                    @endphp
 
-                        <div class="row align-items-center">
+                    <x-student-card :aluno="$aluno" />
+                    <x-modal.confirmation-delete 
+                        id="{{$id}}"
+                        title="{{$title}}"
+                        ariaLabelId="{{ $ariaLabelId }}"
+                        description="{{ $description }}"
+                        :dados="$dados"
+                        :countDependances="$countDependances"
+                        dependanceDescription="{{ $dependanceDescription }}"
+                        formRoute="{{ $formRoute }}"
 
-                            {{-- Nome --}}
-                            <div class="col-12 col-md-3 fw-semibold">
-                                {{ $aluno->name }}
-                            </div>
+                    />
 
-                            {{-- Email --}}
-                            <div class="col-12 col-md-3 text-secondary">
-                                {{ $aluno->email }}
-                            </div>
+                    <!-- {{-- Modal de exclusão do aluno --}}
+                                <div class="modal fade" id="deleteStudentModal_{{ $aluno->id }}" tabindex="-1"
+                                    aria-labelledby="deleteStudentModalLabel_{{ $aluno->id }}" aria-hidden="true">
 
-                            {{-- Data de nascimento --}}
-                            <div class="col-12 col-md-2 text-secondary">
-                                {{ $aluno->birth_date }}
-                            </div>
+                                    <div class="modal-dialog">
 
-                            {{-- Quantidade de cursos --}}
-                            <div class="col-12 col-md-2 text-secondary">
-                                <strong>Cursos:</strong>
-                                {{ $aluno->enrollments->count() }}
-                            </div>
+                                        <div class="modal-content">
 
-                            {{-- Ações --}}
-                            <div class="col-12 col-md-2 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+                                            <div class="modal-header">
 
-                                {{-- Visualizar --}}
-                                <a href="{{ route('adminStudent', $aluno->id) }}" class="btn btn-outline-primary"
-                                    title="Visualizar aluno">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
+                                                <h5 class="modal-title" id="deleteStudentModalLabel_{{ $aluno->id }}">
+                                                    Deletar aluno
+                                                </h5>
 
-                                {{-- Editar --}}
-                                <a href="{{ route('adminStudentEditPage', $aluno->id) }}" class="btn btn-outline-warning"
-                                    title="Editar aluno">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
 
-                                {{-- Deletar --}}
-                                <button type="button" class="btn btn-outline-danger" title="Deletar aluno" data-bs-toggle="modal"
-                                    data-bs-target="#deleteStudentModal_{{ $aluno->id }}">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </li>
+                                            </div>
 
 
-                    {{-- Modal de exclusão do aluno --}}
-                    <div class="modal fade" id="deleteStudentModal_{{ $aluno->id }}" tabindex="-1"
-                        aria-labelledby="deleteStudentModalLabel_{{ $aluno->id }}" aria-hidden="true">
+                                            <div class="modal-body">
 
-                        <div class="modal-dialog">
+                                                Tem certeza que deseja deletar o aluno
+                                                <strong>{{ $aluno->name }}</strong>?
 
-                            <div class="modal-content">
+                                                @if ($aluno->enrollments->isNotEmpty())
 
-                                <div class="modal-header">
+                                                    <div class="alert alert-warning mt-3 mb-0">
 
-                                    <h5 class="modal-title" id="deleteStudentModalLabel_{{ $aluno->id }}">
-                                        Deletar aluno
-                                    </h5>
+                                                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                                        Este aluno possui
+                                                        <strong>{{ $aluno->enrollments->count() }}</strong>
+                                                        matrícula(s) associada(s).
 
-                                </div>
+                                                    </div>
+
+                                                @endif
+
+                                            </div>
 
 
-                                <div class="modal-body">
+                                            <div class="modal-footer">
 
-                                    Tem certeza que deseja deletar o aluno
-                                    <strong>{{ $aluno->name }}</strong>?
+                                                {{-- Não --}}
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Não
+                                                </button>
 
-                                    @if ($aluno->enrollments->isNotEmpty())
 
-                                        <div class="alert alert-warning mt-3 mb-0">
+                                                {{-- Sim --}}
+                                                <form action="{{ route('adminStudentDestroy', $aluno->id) }}" method="POST" class="d-inline">
 
-                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                                                    @csrf
+                                                    @method('DELETE')
 
-                                            Este aluno possui
-                                            <strong>{{ $aluno->enrollments->count() }}</strong>
-                                            matrícula(s) associada(s).
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Sim, deletar
+                                                    </button>
+
+                                                </form>
+
+                                            </div>
 
                                         </div>
 
-                                    @endif
+                                    </div>
 
-                                </div>
-
-
-                                <div class="modal-footer">
-
-                                    {{-- Não --}}
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                        Não
-                                    </button>
-
-
-                                    {{-- Sim --}}
-                                    <form action="{{ route('adminStudentDestroy', $aluno->id) }}" method="POST" class="d-inline">
-
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="submit" class="btn btn-danger">
-                                            Sim, deletar
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                                </div> -->
 
                 @endforeach
 

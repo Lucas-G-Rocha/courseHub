@@ -16,28 +16,17 @@
                 {{-- Search --}}
                 <form action="{{ route('adminProfessores') }}" method="GET" class="d-flex">
 
-                    <input
-                        type="search"
-                        name="search"
-                        class="form-control"
-                        placeholder="Buscar professor..."
-                        value="{{ request('search') }}"
-                    >
+                    <input type="search" name="search" class="form-control" placeholder="Buscar professor..."
+                        value="{{ request('search') }}">
 
-                    <button
-                        type="submit"
-                        class="btn btn-outline-primary ms-2"
-                    >
+                    <button type="submit" class="btn btn-outline-primary ms-2">
                         Buscar
                     </button>
 
                 </form>
 
                 {{-- Cadastrar --}}
-                <a
-                    href="{{ route('adminProfessorCreatePage') }}"
-                    class="btn btn-primary"
-                >
+                <a href="{{ route('adminProfessorCreatePage') }}" class="btn btn-primary">
                     Cadastrar Professor
                 </a>
 
@@ -59,158 +48,35 @@
 
                 @foreach ($professores as $professor)
 
-                    <li class="list-group-item py-4">
+                    @php
+                        $id = "deleteProfessorModal_" . $professor->id;
+                        $title = "Deletar Professor";
+                        $ariaLabelId = "deleteProfessorModalLabel_" . $professor->id;
+                        $description = "Tem certeza que deseja deletar o professor";
+                        $dados = $professor;
+                        $dependanceDescription = "Este professor possui";
+                        $countDependances = [
+                            [
+                            "name" => "cursos",
+                            "count" => $professor->courses->count()
+                            ]
+                        ];
+                        $formRoute = route('adminProfessorDestroy', $professor->id);
+                    @endphp
+                    
+                    <x-professor-card :professor="$professor" />
+                    <x-modal.confirmation-delete 
+                        id="{{$id}}"
+                        title="{{$title}}"
+                        ariaLabelId="{{ $ariaLabelId }}"
+                        description="{{ $description }}"
+                        :dados="$dados"
+                        :countDependances="$countDependances"
+                        dependanceDescription="{{ $dependanceDescription }}"
+                        formRoute="{{ $formRoute }}"
 
-                        <div class="row align-items-center">
+                    />
 
-                            {{-- Nome --}}
-                            <div class="col-12 col-md-3 fw-semibold">
-                                {{ $professor->name }}
-                            </div>
-
-                            {{-- Email --}}
-                            <div class="col-12 col-md-3 text-secondary">
-                                {{ $professor->email }}
-                            </div>
-
-                            {{-- Quantidade de cursos --}}
-                            <div class="col-12 col-md-3 text-secondary">
-
-                                <strong>Cursos:</strong>
-                                {{ $professor->courses->count() }}
-
-                            </div>
-
-                            {{-- Ações --}}
-                            <div class="col-12 col-md-3 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
-
-                                {{-- Ver perfil --}}
-                                <a
-                                    href="{{ route('adminProfessor', $professor->id) }}"
-                                    class="btn btn-outline-primary"
-                                    title="Visualizar perfil"
-                                >
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
-
-                                {{-- Editar --}}
-                                <a
-                                    href="{{ route('adminProfessorEditPage', $professor->id) }}"
-                                    class="btn btn-outline-warning"
-                                    title="Editar professor"
-                                >
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
-
-                                {{-- Deletar --}}
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-danger"
-                                    title="Deletar professor"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteProfessorModal_{{ $professor->id }}"
-                                >
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </li>
-
-
-                    {{-- Modal de exclusão --}}
-                    <div
-                        class="modal fade"
-                        id="deleteProfessorModal_{{ $professor->id }}"
-                        tabindex="-1"
-                        aria-labelledby="deleteProfessorModalLabel_{{ $professor->id }}"
-                        aria-hidden="true"
-                    >
-
-                        <div class="modal-dialog">
-
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-
-                                    <h5
-                                        class="modal-title"
-                                        id="deleteProfessorModalLabel_{{ $professor->id }}"
-                                    >
-                                        Deletar professor
-                                    </h5>
-
-                                    <button
-                                        type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal"
-                                        aria-label="Fechar"
-                                    ></button>
-
-                                </div>
-
-
-                                <div class="modal-body">
-
-                                    Tem certeza que deseja deletar o professor
-                                    <strong>{{ $professor->name }}</strong>?
-
-                                    @if ($professor->courses->isNotEmpty())
-
-                                        <div class="alert alert-warning mt-3 mb-0">
-
-                                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
-
-                                            Este professor possui
-                                            <strong>{{ $professor->courses->count() }}</strong>
-                                            curso(s) associado(s).
-
-                                        </div>
-
-                                    @endif
-
-                                </div>
-
-
-                                <div class="modal-footer">
-
-                                    {{-- Não --}}
-                                    <button
-                                        type="button"
-                                        class="btn btn-secondary"
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Não
-                                    </button>
-
-                                    {{-- Sim --}}
-                                    <form
-                                        action="{{ route('adminProfessorDestroy', $professor->id) }}"
-                                        method="POST"
-                                        class="d-inline"
-                                    >
-
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-danger"
-                                        >
-                                            Sim, deletar
-                                        </button>
-
-                                    </form>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
 
                 @endforeach
 

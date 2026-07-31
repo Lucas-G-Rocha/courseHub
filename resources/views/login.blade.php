@@ -16,7 +16,7 @@
                 </div>
             @endif
 
-            <form action="/api/login" method="POST"
+            <form action="{{route('login')}}" method="POST"
                 class="container d-flex flex-column row-gap-2 align-items-center justify-content-center w-75">
                 @csrf
 

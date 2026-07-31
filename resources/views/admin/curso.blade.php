@@ -136,7 +136,7 @@
 
                                 {{-- Deletar --}}
                                 <button type="button" class="btn btn-outline-danger" title="Deletar lição" data-bs-toggle="modal"
-                                    data-bs-target="#deleteLessonModal{{ $lesson->id }}">
+                                    data-bs-target="#deleteLessonModal_{{ $lesson->id }}">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
 
@@ -153,45 +153,68 @@
                     </li>
 
 
+                    @php
+                        $id = "deleteLessonModal_" . $lesson->id;
+                        $title = "Deletar Lição";
+                        $ariaLabelId = "deleteLessonModalLabel_" . $lesson->id;
+                        $description = "Tem certeza que deseja deletar a Lição";
+                        $dados = $lesson;
+                        $dependanceDescription = "Esta lição possui";
+                        $countDependances = [];
+                        $formRoute = route('adminLessonDestroy', $lesson->id);
+                    @endphp
+
+                    <x-modal.confirmation-delete 
+                        id="{{$id}}"
+                        title="{{$title}}"
+                        ariaLabelId="{{ $ariaLabelId }}"
+                        description="{{ $description }}"
+                        :dados="$dados"
+                        :countDependances="$countDependances"
+                        dependanceDescription="{{ $dependanceDescription }}"
+                        formRoute="{{ $formRoute }}"
+
+                    />
+
                     {{-- Modal para visualizar a lição --}}
-                    <div id="lessonModal{{ $lesson->id }}" class="modal fade" tabindex="-1"
-                        aria-labelledby="lessonModalLabel{{ $lesson->id }}" aria-hidden="true">
+                                <div id="lessonModal{{ $lesson->id }}" class="modal fade" tabindex="-1"
+                                    aria-labelledby="lessonModalLabel{{ $lesson->id }}" aria-hidden="true">
 
-                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 
-                            <div class="modal-content">
+                                        <div class="modal-content">
 
-                                <div class="modal-header">
+                                            <div class="modal-header">
 
-                                    <h5 class="modal-title" id="lessonModalLabel{{ $lesson->id }}">
-                                        {{ $lesson->name }}
-                                    </h5>
+                                                <h5 class="modal-title" id="lessonModalLabel{{ $lesson->id }}">
+                                                    {{ $lesson->name }}
+                                                </h5>
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+
+                                            </div>
+
+                                            <div class="modal-body py-4">
+
+                                                <p class="fs-6">
+                                                    {{ $lesson->content }}
+                                                </p>
+
+                                            </div>
+
+                                            <div class="modal-footer justify-content-center">
+
+                                                <button data-bs-dismiss="modal" class="btn btn-primary">
+                                                    Fechar
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
-
-                                <div class="modal-body py-4">
-
-                                    <p class="fs-6">
-                                        {{ $lesson->content }}
-                                    </p>
-
-                                </div>
-
-                                <div class="modal-footer justify-content-center">
-
-                                    <button data-bs-dismiss="modal" class="btn btn-primary">
-                                        Fechar
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
 
 
                     {{-- Modal para editar a lição --}}
@@ -282,7 +305,7 @@
 
 
                     {{-- Modal para deletar a lição --}}
-                    <div id="deleteLessonModal{{ $lesson->id }}" class="modal fade" tabindex="-1"
+                    <!-- <div id="deleteLessonModal{{ $lesson->id }}" class="modal fade" tabindex="-1"
                         aria-labelledby="deleteLessonModalLabel{{ $lesson->id }}" aria-hidden="true">
 
                         <div class="modal-dialog modal-dialog-centered">
@@ -329,7 +352,7 @@
 
                         </div>
 
-                    </div>
+                    </div> -->
 
                 @endforeach
 
