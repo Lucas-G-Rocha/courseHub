@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\courseController;
+use App\Http\Controllers\MailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -61,3 +62,5 @@ Route::middleware('auth:sanctum')->post('/logoutAll', function (Request $request
         "msg" => "Usuário deslogado de todas as contas"
     ]);
 });
+
+Route::post("/mail/send", [MailController::class, "sendMail"])->name("sendPublicMail");
